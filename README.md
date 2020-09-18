@@ -1,5 +1,5 @@
 # Canvas Reminders
-Canvas reminders is a script that automates adding Canvas's Todo list to you Apple Reminders.
+Canvas reminders is a script that automates adding Canvas's Todo list to your Apple Reminders.
 
 ### Using Canvas Reminders
 In order for Canvas Reminders to work, you need to fill out the api_keys.txt with your instiutions canvas url and an access key for your canvas account
