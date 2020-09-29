@@ -1,8 +1,11 @@
 from canvasapi import Canvas
+from canvasapi.exceptions import CanvasException
 from datetime import datetime
 from subprocess import Popen, PIPE
 import os
 import pathlib
+import time
+import setup_window_tk
 
 
 def collect_todo_list(canvas):
@@ -33,7 +36,7 @@ def reminders_list():
                 end repeat
                 
                 set TID to AppleScript's text item delimiters
-                set AppleScript's text item delimiters to ","
+                set AppleScript's text item delimiters to ";;"
                 set listText to reminderStrings as text
                 set AppleScript's text item delimiters to TID
                 set listText to (listText)
@@ -44,7 +47,7 @@ def reminders_list():
     stdout, stderr = p.communicate(script)
     p.wait()
     noNewLine = stdout.rstrip()
-    delimitedList = noNewLine.split(',')
+    delimitedList = noNewLine.split(';;')
     return delimitedList
 
 def reminder_creation(name, due_date, listName):
@@ -78,11 +81,20 @@ def reminder_exists(cReminders, nReminder):
         return True
     else:
         return False
-    
+
+def create_key_file():
+    setup_window_tk.main()
+        
 
 def reminder_logic():
+    """
+    takes care of several important processes. Reads in the file information to parse into the canvasapi.
+    Then uses embeded apple script to read off the current reminders in the specified list.
+    From there it adds each of the assignments to the Reminders list if they do not already exist.
+    """
     currentDir = pathlib.Path(__file__).parent.absolute()
     filePath = currentDir/"api_keys.txt"
+
     keyFile = open(filePath)
     tagU, url = keyFile.readline().split('=')
     tagK, key = keyFile.readline().split('=')
@@ -93,9 +105,15 @@ def reminder_logic():
 
     keyFile.close()
 
-    canvas = Canvas(API_URL, API_KEY)
-    todo_list = collect_todo_list(canvas)
-    currentReminders = reminders_list()
+    try:
+        canvas = Canvas(API_URL, API_KEY)
+        todo_list = collect_todo_list(canvas)
+        currentReminders = reminders_list()
+    except CanvasException as err:
+        setup_window_tk.errorWindow(err)
+    except Exception as err:
+        setup_window_tk.errorWindow(err)
+
 
     for item in todo_list:
         assignment = item['assignment']
@@ -113,7 +131,15 @@ def reminder_logic():
     
 
 def main():
-    reminder_logic()
+    currentDir = pathlib.Path(__file__).parent.absolute()
+    filePath = currentDir/"api_keys.txt"
+    if filePath.is_file():
+        print(f'True: {filePath}')
+        reminder_logic()
+    else:
+        print(f'False: {filePath}')
+        create_key_file()
+    
         
 
 if __name__ == "__main__":
