@@ -11,7 +11,7 @@ This is done through the setup screen which will create and save the information
 
 For Example:
 
-<img src="images/setup_screen.png" width="300" height="75">
+<img src="images/setup_screen.png" width="325" height="200">
 
 To Generate the keycode I recommend this [Guide](https://community.canvaslms.com/t5/Admin-Guide/How-do-I-obtain-an-API-access-token-in-the-Canvas-Data-Portal/ta-p/157)
 
